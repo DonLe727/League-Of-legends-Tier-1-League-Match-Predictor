@@ -1,5 +1,8 @@
 # League-Of-legends-Pro-League-Match-Predictor
 <html>
+<head>
+    <title> Hello </title>
+</head>
 <body>
     <iframe
     src="assets/dist_of_gold_15.html"
