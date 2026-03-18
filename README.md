@@ -1,7 +1,7 @@
 # League Of Legends Pro-league 15-Minute Match Predictor
 
 ## Introduction
-In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from [Oracle`s Elixer](https://oracleselixir.com/tools/downloads). This dataset provides post-match game data from official professional leagues spanning through various data collecting API`s from 2014 to 2026.
+In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from [Oracle's Elixer](https://oracleselixir.com/tools/downloads). This dataset provides post-match game data from official professional leagues spanning through various data collecting API`s from 2014 to 2026.
 
 To target current and relevant game statistics, we extracted match data from the years 2023-2025. It is important to note that we did not want to include 2026 game data because it is still currently ongoing and do not want to have varying exploratory outcomes. Ultimately, we decided to  focus on to Tier-1 leagues which includes: CBLOL, LCK, LCP, LCS, LEC, and LPL.
 
