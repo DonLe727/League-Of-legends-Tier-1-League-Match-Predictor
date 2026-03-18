@@ -23,7 +23,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="/assets/css/style.css?v=f7e50189dae829b741d3494e9acb1ecf0fb4455b">
+    <link rel="stylesheet" href="/assets/css/style.css?v=b402fe4e8a9cd413bf487efb9d5395074706e139">
     <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
 
 <!-- Setup Google Analytics -->
@@ -52,7 +52,7 @@
       <h1 id="league-of-legends-pro-league-15-minute-match-predictor">League Of Legends Pro-league 15-Minute Match Predictor</h1>
 
 <h2 id="introduction">Introduction</h2>
-<p>In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from [Oracle<code class="language-plaintext highlighter-rouge">s Elixer](https://oracleselixir.com/tools/downloads). This dataset provides post-match game data from official professional leagues spanning through various data collecting API</code>s from 2014 to 2026.</p>
+<p>In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from <a href="https://oracleselixir.com/tools/downloads">Oracle’s Elixer</a>. This dataset provides post-match game data from official professional leagues spanning through various data collecting API`s from 2014 to 2026.</p>
 
 <p>To target current and relevant game statistics, we extracted match data from the years 2023-2025. It is important to note that we did not want to include 2026 game data because it is still currently ongoing and do not want to have varying exploratory outcomes. Ultimately, we decided to  focus on to Tier-1 leagues which includes: CBLOL, LCK, LCP, LCS, LEC, and LPL.</p>
 
@@ -168,12 +168,12 @@
 <h2 id="data-cleaning-and-exploratory-data-analysis">Data Cleaning and Exploratory Data Analysis</h2>
 <p>To prepare the data for our EDA, we took several cleaning steps.</p>
 <ol>
-  <li><strong>Filtered Columns</strong>: We filtered the DataFrame columns to only include: <code class="language-plaintext highlighter-rouge">[</code>gameid<code class="language-plaintext highlighter-rouge">, </code>league<code class="language-plaintext highlighter-rouge">, </code>side<code class="language-plaintext highlighter-rouge">, </code>position<code class="language-plaintext highlighter-rouge">, </code>result<code class="language-plaintext highlighter-rouge">, </code>firstblood<code class="language-plaintext highlighter-rouge">, </code>firstdragon<code class="language-plaintext highlighter-rouge">, </code>golddiffat15<code class="language-plaintext highlighter-rouge">, </code>killsat15<code class="language-plaintext highlighter-rouge">, </code>opp_killsat15<code class="language-plaintext highlighter-rouge">, </code>ckpm<code class="language-plaintext highlighter-rouge">]</code>
+  <li><strong>Filtered Columns</strong>: We filtered the DataFrame columns to only include: [<code class="language-plaintext highlighter-rouge">gameid</code>, <code class="language-plaintext highlighter-rouge">league</code>, <code class="language-plaintext highlighter-rouge">side</code>, <code class="language-plaintext highlighter-rouge">position</code>, <code class="language-plaintext highlighter-rouge">result</code>, <code class="language-plaintext highlighter-rouge">firstblood</code>, <code class="language-plaintext highlighter-rouge">firstdragon</code>, <code class="language-plaintext highlighter-rouge">golddiffat15</code>, <code class="language-plaintext highlighter-rouge">killsat15</code>, <code class="language-plaintext highlighter-rouge">opp_killsat15</code>, <code class="language-plaintext highlighter-rouge">ckpm</code>]
     <ul>
       <li>This allows us to focus on early-game statistics such as <code class="language-plaintext highlighter-rouge">firstblood</code>, <code class="language-plaintext highlighter-rouge">firstdragon</code> and etc.</li>
     </ul>
   </li>
-  <li><strong>Restricted to Tier-1 Leagues</strong>: We filtered the <code class="language-plaintext highlighter-rouge">league</code> column to only include: <code class="language-plaintext highlighter-rouge">[</code>LCK<code class="language-plaintext highlighter-rouge">, </code>LEC<code class="language-plaintext highlighter-rouge">, </code>LCS<code class="language-plaintext highlighter-rouge">, </code>CBLOL<code class="language-plaintext highlighter-rouge">, </code>LCP<code class="language-plaintext highlighter-rouge">, </code>LPL<code class="language-plaintext highlighter-rouge">]</code>
+  <li><strong>Restricted to Tier-1 Leagues</strong>: We filtered the <code class="language-plaintext highlighter-rouge">league</code> column to only include: [<code class="language-plaintext highlighter-rouge">LCK</code>, <code class="language-plaintext highlighter-rouge">LEC</code>, <code class="language-plaintext highlighter-rouge">LCS</code>, <code class="language-plaintext highlighter-rouge">CBLOL</code>, <code class="language-plaintext highlighter-rouge">LCP</code>, <code class="language-plaintext highlighter-rouge">LPL</code>]
     <ul>
       <li>This filters our data to only Tier-1 leagues.</li>
     </ul>

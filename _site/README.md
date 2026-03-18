@@ -1,7 +1,7 @@
 # League Of Legends Pro-league 15-Minute Match Predictor
 
 ## Introduction
-In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from [Oracle`s Elixer](https://oracleselixir.com/tools/downloads). This dataset provides post-match game data from official professional leagues spanning through various data collecting API`s from 2014 to 2026.
+In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from [Oracle's Elixer](https://oracleselixir.com/tools/downloads). This dataset provides post-match game data from official professional leagues spanning through various data collecting API`s from 2014 to 2026.
 
 To target current and relevant game statistics, we extracted match data from the years 2023-2025. It is important to note that we did not want to include 2026 game data because it is still currently ongoing and do not want to have varying exploratory outcomes. Ultimately, we decided to  focus on to Tier-1 leagues which includes: CBLOL, LCK, LCP, LCS, LEC, and LPL.
 
@@ -37,9 +37,9 @@ League of Legends is arguably the most popular game across history. Many of its 
 
 ## Data Cleaning and Exploratory Data Analysis
 To prepare the data for our EDA, we took several cleaning steps.
-1.  **Filtered Columns**: We filtered the DataFrame columns to only include: `[`gameid`, `league`, `side`, `position`, `result`, `firstblood`, `firstdragon`, `golddiffat15`, `killsat15`, `opp_killsat15`, `ckpm`]`
+1.  **Filtered Columns**: We filtered the DataFrame columns to only include: [`gameid`, `league`, `side`, `position`, `result`, `firstblood`, `firstdragon`, `golddiffat15`, `killsat15`, `opp_killsat15`, `ckpm`]
     * This allows us to focus on early-game statistics such as `firstblood`, `firstdragon` and etc.
-2.  **Restricted to Tier-1 Leagues**: We filtered the `league` column to only include: `[`LCK`, `LEC`, `LCS`, `CBLOL`, `LCP`, `LPL`]`
+2.  **Restricted to Tier-1 Leagues**: We filtered the `league` column to only include: [`LCK`, `LEC`, `LCS`, `CBLOL`, `LCP`, `LPL`]
     * This filters our data to only Tier-1 leagues.
 3. **Filtered to team Rows**: The dataset records 12 rows per game (10 roles and 2 team summaries). We filtered the `position` column to ``team`` so we can only anaylze overall team metrics.
 4. **Type Conversion**: We converted categorical boolean columns like `result`,`firstblood`,`firstdragon` into integers (1 and 0).
