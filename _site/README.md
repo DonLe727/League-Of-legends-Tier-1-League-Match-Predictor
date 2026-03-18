@@ -1,88 +1,134 @@
-# League Of Legends 15-Minute Match Predictor
-
-**Name(s)**: Don Le
+# League Of Legends Pro-league 15-Minute Match Predictor
 
 ## Introduction
-We are analyzing competitive League of Legends esports sourced from Oracle's Elixir data. This dataset provides post-match statistics from official professional leagues spanning from 2014 to 2026. To minimize the noise found in lower-tier professional play, we narrowed our scope strictly to Tier-1 leagues: CBLOL, LCK, LCP, LCS, LEC, and LPL. 
+In this project, we are analyzing professional competitive League of Legends esports game data that was gathered from [Oracle`s Elixer](https://oracleselixir.com/tools/downloads). This dataset provides post-match game data from official professional leagues spanning through various data collecting API`s from 2014 to 2026.
 
-The central question we are investigating is: **"How much does early-game snowballing affect a team's win rate?"** Specifically, we want to know what drives a professional team to victory by the 15-minute mark. Readers should care about this dataset because it reveals whether early-game aggression and objective control mathematically secure victories in the most high-stakes, unforgiving esports environments in the world.
+To target current and relevant game statistics, we extracted match data from the years 2023-2025. It is important to note that we did not want to include 2026 game data because it is still currently ongoing and do not want to have varying exploratory outcomes. Ultimately, we decided to  focus on to Tier-1 leagues which includes: CBLOL, LCK, LCP, LCS, LEC, and LPL.
 
-* **Total Rows**: 376,452 originally, filtered down to just the team-level summaries for Tier-1 leagues.
-* **Relevant Columns**:
-  * `result`: The match outcome (1 for a win, 0 for a loss).
-  * `firstdragon`: A boolean/integer indicating if the team secured the first dragon.
-  * `golddiffat15`: The team's gold difference compared to the opponent at the 15-minute mark.
-  * `killsat15`: The total number of kills the team secured by the 15-minute mark.
-  * `league`: The specific Tier-1 league the match took place in.
+League of Legends is arguably the most popular game across history. Many of its fanbase take competitive gaming to a whole new level for entertainment, rooting for a team, or even betting. League of Legends is notorious for intense gameplay, high skill ceiling, and unforgiving environments. As a result, the central question we are investigating is: **How much does early-game advantages affect a team`s win rate in top-tier pro play?** In other words, at the 15-minute mark, what drives a professional team to victory?
+
+### DataFrame (Displaying some columns)
+
+| gameid                | league   | side   | position   |   result |   firstblood |   firstdragon |   golddiffat15 |   killsat15 |   opp_killsat15 |   ckpm |
+|:----------------------|:---------|:-------|:-----------|---------:|-------------:|--------------:|---------------:|------------:|----------------:|-------:|
+| ESPORTSTMNT06_2753012 | LFL2     | Blue   | top        |        1 |            0 |           nan |            322 |           0 |               0 | 0.4594 |
+| ESPORTSTMNT06_2753012 | LFL2     | Blue   | jng        |        1 |            0 |           nan |           -357 |           0 |               0 | 0.4594 |
+| ESPORTSTMNT06_2753012 | LFL2     | Blue   | mid        |        1 |            0 |           nan |           -479 |           0 |               0 | 0.4594 |
+| ESPORTSTMNT06_2753012 | LFL2     | Blue   | bot        |        1 |            0 |           nan |            200 |           0 |               1 | 0.4594 |
+| ESPORTSTMNT06_2753012 | LFL2     | Blue   | sup        |        1 |            0 |           nan |           -216 |           0 |               0 | 0.4594 |
+
+* **Total Rows**: 376,452 (188226 games)
+* **Columns**: 165
+* **Revelant Columns**:
+    * `result`: The match outcome (1 for a win, 0 for a loss).
+    * `firstblood`: A float indicating if a team secured the first kill. (1.0 for True, 0.0 for False)
+    * `firstdragon`: A float indicating if a team secured first dragon. (1.0 for True, 0.0 for False)
+    * `golddiffat15`: A team`s gold difference compared to the other team at the 15-minute mark.(float)
+    * `killsat15`: The total number of kills a team has by the 15-minute mark. (float)
+    * `opp_killsat15`: The total number of kills the opponent has by the 15-minute mark. (float)
+    * `league`: The league that the match took place in. (string)
+    * `side`: What side a team was playing on. (`Blue`, or `Red`)
+    * `position`: 6 different labels: top, jng, mid, bot, sup, team
+    * `ckpm`: Combined Kills per Minute. (float; No missing values)
+
+
+
+* **Note**: There are many missing data.
 
 ## Data Cleaning and Exploratory Data Analysis
-To prepare the data, we took several cleaning steps directly related to the data-generating process:
-1. **Filtered to Team Rows**: The dataset records 12 rows per game (10 players and 2 team summaries). We filtered the `position` column to `'team'` so we only analyzed overall team metrics.
-2. **Restricted to Tier-1 Leagues**: We filtered the `league` column to only include `['LCK', 'LEC', 'LCS', 'CBLOL', 'LCP', 'LPL']`.
-3. **Type Conversion**: We converted categorical boolean columns like `result`, `firstblood`, and `firstdragon` into integers (`1` and `0`) to easily calculate percentages and build predictive models.
-4. **Handling Missingness**: We temporarily dropped NA values to maintain consistency during our initial EDA.
+To prepare the data for our EDA, we took several cleaning steps.
+1.  **Filtered Columns**: We filtered the DataFrame columns to only include: `[`gameid`, `league`, `side`, `position`, `result`, `firstblood`, `firstdragon`, `golddiffat15`, `killsat15`, `opp_killsat15`, `ckpm`]`
+    * This allows us to focus on early-game statistics such as `firstblood`, `firstdragon` and etc.
+2.  **Restricted to Tier-1 Leagues**: We filtered the `league` column to only include: `[`LCK`, `LEC`, `LCS`, `CBLOL`, `LCP`, `LPL`]`
+    * This filters our data to only Tier-1 leagues.
+3. **Filtered to team Rows**: The dataset records 12 rows per game (10 roles and 2 team summaries). We filtered the `position` column to ``team`` so we can only anaylze overall team metrics.
+4. **Type Conversion**: We converted categorical boolean columns like `result`,`firstblood`,`firstdragon` into integers (1 and 0).
+5. **Handling Missingness**: We dropped NA values to maintain consistency during our initial EDA.
 
-*(Paste your raw Markdown table output from `.to_markdown(index=False)` here!)*
+| gameid                | league   | side   | position   |   result |   firstblood |   firstdragon |   golddiffat15 |   killsat15 |   opp_killsat15 |   ckpm |
+|:----------------------|:---------|:-------|:-----------|---------:|-------------:|--------------:|---------------:|------------:|----------------:|-------:|
+| ESPORTSTMNT04_2659018 | LCK      | Blue   | team       |        1 |            0 |             1 |           3176 |           5 |               1 | 0.7965 |
+| ESPORTSTMNT04_2659018 | LCK      | Red    | team       |        0 |            1 |             0 |          -3176 |           1 |               5 | 0.7965 |
+| ESPORTSTMNT04_2661035 | LCK      | Blue   | team       |        1 |            1 |             0 |           1287 |           3 |               0 | 0.5804 |
+| ESPORTSTMNT04_2661035 | LCK      | Red    | team       |        0 |            0 |             1 |          -1287 |           0 |               3 | 0.5804 |
+| ESPORTSTMNT04_2660040 | LCK      | Blue   | team       |        1 |            0 |             0 |            905 |           2 |               4 | 0.8326 |
+
+### Aggregation
+
+| league   |   avg_ckpm |   avg_kills_at_15 |   first_blood_rate |   first_dragon |
+|:---------|-----------:|------------------:|-------------------:|---------------:|
+| LCP      |      0.869 |             3.414 |              0.5   |            0.5 |
+| LEC      |      0.849 |             3.757 |              0.5   |            0.5 |
+| CBLOL    |      0.831 |             2.72  |              0.5   |            0.5 |
+| LCS      |      0.805 |             3.339 |              0.499 |            0.5 |
+| LCK      |      0.8   |             3.007 |              0.5   |            0.5 |
+
+To aggregate our data, we grouped our data by `league` and calculated the mean for `ckpm`, `killsat15`, `firstblood`, and `firstdragon`. This pivot table reveals the different levels of early-game statistics and intensity across Tier-1 leagues. Most importantly, our pivot table reveals that amongst the Tier-1 regions, LPL is not there, signifying that LPL does not record 15-minute interval statistics. **Our analysis will therefore not include LPL as a Tier-1 LoL League and will be referencing Tier-1 League as [`LCK`, `LEC`, `LCS`, `CBLOL`, `LCP`] for convenience unless specified otherwise.**
 
 ### Univariate Analysis
-<iframe src="assets/dist_of_gold_tier_one_histogram.html" width="800" height="500" frameborder="0"></iframe>
-This plot shows the distribution of the gold difference at 15 minutes across Tier-1 leagues. The distribution is symmetric and centered at zero, meaning that advantages are evenly distributed between blue and red sides, though massive gold leads (outliers) do occur. Note that restricted APIs for leagues like the LPL result in missing data here.
+This plot shows the distribution of gold difference at the 15 minute mark for Tier-1 leagues. The distribution appears to be a normal distribution centered at zero, meaning that advantages are evenly distributed across red and blue side, though there are occasional outliers. (Note that LPL is not included in this anaylsis.)
+<iframe src="assets/dist_of_gold_tier_one_histogram.html" width="850" height="550" frameborder="0"></iframe>
+
 
 ### Bivariate Analysis
-<iframe src="assets/bivariate_plot.html" width="800" height="500" frameborder="0"></iframe>
-This bar chart visualizes the relationship between securing the first dragon and the match result. Teams that secure the first dragon demonstrate a consistently higher win rate than those that do not, highlighting the importance of early objective control.
-
-### Interesting Aggregates
-*(Paste your grouped pivot table Markdown output here)*
-We grouped the data by `league` and calculated the mean for Combined Kills Per Minute (`ckpm`), Kills at 15, First Blood Rate, and First Dragon Rate. This pivot table reveals the varying levels of early-game aggression and intensity across different regions.
+These two scatter plots visualizes the win/loss result based on gold and kill difference across blue slide and blue side. Teams that have a positive gold and kill differences have a higher chance of winning that those that have a negative gold and kill difference.
+<iframe src="assets/kill_lead_vs_gold_lead_scatter.html" width="1020" height="660" frameborder="0"></iframe>
 
 ## Assessment of Missingness
-### NMAR Analysis
-We believe the `golddiffat15` column is **NMAR** (Not Missing At Random). The missingness is likely tied intrinsically to the game state itself. Specifically, the Oracle's Elixir API might fail to capture exact gold differences at the 15-minute mark due to specific match interruptions, such as server crashes, extended technical pauses, or remakes. If we were to obtain an additional data column, such as `api_error_flag` or `technical_pause_duration`, we could determine if the missingness is explained by these technical interruptions, thereby making the missingness MAR (Missing At Random).
+We believe 15-minute statistic (e.g. `golddiffat15`) column is **NMAR**. The missingness can be due to game trackers itself. For example, Oracle`s Elixer API might not be able to track gold differences at the 15-minute mark due to technical game structures varied by league.
+Therefore, we completed permutation tests to analyze the dependency of missingness. Our threshold of significance will be a p-value of 0.05.
 
-### Missingness Dependency
-<iframe src="assets/missingness_plot.html" width="800" height="500" frameborder="0"></iframe>
-We performed a permutation test to determine if the missingness of `golddiffat15` depends on the `league`. 
-* **Observed TVD**: *(Insert your observed TVD)*
-* **P-Value**: *(Insert your calculated p-value)*
-* **Conclusion**: Based on the p-value, we (reject / fail to reject) the null hypothesis, suggesting the missingness of 15-minute gold data (does / does not) depend on the league being played.
+**Test 1: League (MAR)**
+- **Null Hypothesis**: The missingness of `golddiffat15` does **not** depend on the `league`.
+- **Alternative Hypothesis**: The missingness of `golddiffat15` **does** depend on the `league`.
+* **Observed TVD**: 0.9810
+* **P-Value**: 0.0000
+Because our p-value (~0.0000) is far below our threshold of 0.05, we reject the null hypothesis, signifying that `golddiffat15` is heavily dependent on the league the game was played in. (MAR)
+<iframe src="assets/missingness_plot.html" width="820" height="550" frameborder="0"></iframe>
+
+**Test 2: Side (MCAR)**
+- **Null Hypothesis**: The missingness of `golddiffat15` does **not** depend on the `side` (Blue/Red).
+- **Alternative Hypothesis**: The missingness of `golddiffat15` **does** depend on the `side`.
+* **Observed TVD**: 0.0000
+* **P-Value**: 1.0000
+
+Because our p-value (1.0000) is greater than our threshold, we fail to reject the null hypothesis, suggesting the missingness of `golddiffat15` does not depend on which side a team is playing on.
+<iframe src="assets/missingness_plot2.html" width="820" height="550" frameborder="0"></iframe>
 
 ## Hypothesis Testing
-We tested the following question: *"Is there any difference in kills between professional leagues?"*
-* **Null Hypothesis**: The average number of kills at 15 minutes (`killsat15`) is the exact same across all Tier-1 leagues. Any observed differences are due to random chance.
-* **Alternative Hypothesis**: The average number of kills at 15 minutes differs across Tier-1 leagues.
-* **Test Statistic**: The variance of the mean kills at 15 minutes across the leagues.
+We tested the question: "Is there any difference in kills between pro League of Legends leagues?"
+* **Null Hypothesis**: The Mean Combined Kills per Minute (CKPM) in Tier 1 Leagues is the same as the mean CKPM of other Leagues.
+* **Alternative Hypothesis**: The CKPM of Tier 1 Leagues is ***less*** than the mean CKPM of other leagues. 
+* **Test Statistic**: Difference in Means (Tier-1 Mean CKPM - Other Leagues Mean CKPM)
 * **Significance Level**: 0.05
-* **P-Value**: *(Insert your p-value)*
-* **Conclusion**: *(Insert your conclusion based on the p-value. Make sure to avoid absolute language like "proves")*.
+
+<iframe src="assets/permutation_test_histogram.html" width="820" height="550" frameborder="0"></iframe>
+
+**Results:**
+* **Tier-1 Mean CKPM**: 0.8393
+* **Other Leagues Mean CKPM**: 1.0041
+
+* **Observed Difference**: -0.1648
+* **P-Value**: 0.0000
+
+Because our p-value is far below our significance level of 0.05, we reject the null hypothesis, suggesting that Tier-1 leagues matches tend to be more slower paced resulting in less overall kills compared to lower-tier leagues.
 
 ## Framing a Prediction Problem
-Our goal is to predict the **`result`** (whether a team wins or loses a match). This is a **binary classification** problem. 
+Our goal is to predict the `result` (win/loss) of a tier-1 league game. This is a binary classification problem.
 
-At the "time of prediction," we are strictly standing at the 15-minute mark of the game. Therefore, our model will only be trained on features and information known exactly at 15 minutes (such as `killsat15`, `firstdragon`, and `golddiffat15`).
+We are primarily focusing on the 15-minute mark + early game statistics of the game to predict the outcome of a game. Our model will be trained on early-game information such as `killsat15`, `firstdragon`, `golddiffat15`, and `firstdragon`.
 
-We are using **Accuracy** as our evaluation metric. Because every League of Legends match features exactly one winning team and one losing team, our dataset has a naturally perfectly balanced 50/50 split of wins and losses. This makes Accuracy a highly reliable and interpretable metric over F1-score or Precision.
+We are using accuracy as our evaluation metric because we want to be able to predict the outcome of each match consistently. Because our dataset has data on both teams per match, we have a perfectly balance 50/50 ratio of wins and losses. This makes accuracy an effective metric.
 
 ## Baseline Model
-Our baseline model is a *(Insert your classifier, e.g., Decision Tree)* that predicts the match result using two features:
-1. `killsat15` (Quantitative)
-2. `firstdragon` (Nominal - Boolean)
+For our baseline model, we built a logistic regression classifier to predict tier-1 match results. Note that LPL is not included because we are using 15-minute interval data. 
 
-*(Describe your encodings here, e.g., We left the quantitative features as-is and used a OneHotEncoder for the nominal features).* The model achieved an Accuracy of *(Insert accuracy)* on the unseen testing data. We believe this model is *(good/not good)* because *(provide reasoning based on your baseline performance)*.
+**Features Used:**
+* `golddiffat15` (Quantitative): The team`s gold difference compared to the opponent at the 15-minute mark.
 
-## Final Model
-*(Fill in this section once you have engineered two new features and run your GridSearchCV for hyperparameters).*
-* **Added Features**: 
-* **Modeling Algorithm**: 
-* **Best Hyperparameters**: 
-* **Performance Improvement**: 
+**Results**
 
-## Fairness Analysis
-*(Fill in this section once you have completed your Step 8 Permutation Test)*
-* **Group X**: 
-* **Group Y**: 
-* **Evaluation Metric**: Accuracy
-* **Null Hypothesis**: Our model is fair. Its accuracy for Group X and Group Y are roughly the same, and any differences are due to random chance.
-* **Alternative Hypothesis**: Our model is unfair. Its accuracy for Group X is lower than its accuracy for Group Y.
-* **Test Statistic**: Difference in Accuracy.
-* **P-Value & Conclusion**:
+* **Train Accuracy**: 0.7155
+* **Test Accuracy**: 0.7224
+
+Our baseline mode achieved an accuracy of 0.7224 on testing data. We believe this is a great starting point since we are above the probability of a coin flip. This accuracy implies that a gold lead at 15 minutes helps a team to snowball to victory. However, this model is far too simplistic and does not consider other in-game factors that can aid a team to win.
