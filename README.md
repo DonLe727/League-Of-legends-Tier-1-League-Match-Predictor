@@ -120,15 +120,54 @@ We are primarily focusing on the 15-minute mark + early game statistics of the g
 
 We are using accuracy as our evaluation metric because we want to be able to predict the outcome of each match consistently. Because our dataset has data on both teams per match, we have a perfectly balance 50/50 ratio of wins and losses. This makes accuracy an effective metric.
 
-## Baseline Model
+## Baseline Model (Logistic Regression)
 For our baseline model, we built a logistic regression classifier to predict tier-1 match results. Note that LPL is not included because we are using 15-minute interval data. 
 
 **Features Used:**
 * `golddiffat15` (Quantitative): The team`s gold difference compared to the opponent at the 15-minute mark.
 
-**Results**
-
+**Results:**
+<iframe src="assets/baseline_logistic_regression.html" width="940" height="550" frameborder="0"></iframe>
 * **Train Accuracy**: 0.7155
 * **Test Accuracy**: 0.7224
 
 Our baseline mode achieved an accuracy of 0.7224 on testing data. We believe this is a great starting point since we are above the probability of a coin flip. This accuracy implies that a gold lead at 15 minutes helps a team to snowball to victory. However, this model is far too simplistic and does not consider other in-game factors that can aid a team to win.
+
+**Logistic Regression in practice:**
+<iframe src="assets/base_confusion_matrix.html" width="640" height="450" frameborder="0"></iframe>
+From this simulation with 1466 games, our prediction model was able to predict 1059 out of 1466 games correctly. (%72.24 accuracy)
+
+## Final Model (Random Forest With 5-fold Cross-Validation)
+For our final predictive model, we upgraded from a simple Logistic Regression classifier to a Random Forest Classifier with 5-fold Cross-Validation, allowing us to test multiple early-game statistics: `golddiffat15`, `killsat15`, `firstblood`, `firstdragon`, and `firstherald`.
+
+**Preprocessing:**
+Using ColumnTransformer in our PipeLine, we pplied StandardScaler to `golddiffat15` and `killsat15` to prevent large gold values to overshadow smaller metrics. We kept booleans features like `firstblod`, `firstherald` and `firstdragon` as is.
+
+**Tuning:**
+To optimize our Random Forest and prevent overfitting to the training data, we utilized GidSearchCV with 5-fold cross-validation with `cv=5`. We tested multiple depths and estimators:
+* `max_depth`: [3, 5, 7, 10]
+* `n_estimators`: [50, 100, 200]
+
+**Results:**
+* **Best Hyperparameters**: `rf__max_depth`= 5; `rf__n_estimators`=100
+* **Cross-Validation Accuracy**: 0.7189
+* **Final Test Accuracy**: 0.7265
+
+By including various early-game statistics such as first blood and first dragon status on top of economic success, our Random Forest model improved our ability to predict the match outcome by a slight amount. Our accuracy increased by 0.0047. This is likely due to gold data being an accumative measurement of all micro advantages a team has combined, therefore, not increasing our accuracy by a significant amount compared to our Baseline model (which predicted solely on `golddiffat15`).
+
+**Feature Importances:**
+Because of our Random Forest Model, we are able to see the importance (influences) of each game statistic:
+<iframe src="assets/importance_bar_chart.html" width="1000" height="450" frameborder="0"></iframe>
+`golddiffat15` has an importance of ~0.7519 (higher is better). Other early-game data has a lower importance, signifying lower influence to determine a team's victory/loss.
+
+## Fairness Analysis
+To evaluate the fairness of our Final Random Forest model, we utilized permutation testing to predict outcomes (win/loss) as accurately for teams that secure the first dragon as it does for teams that do not. We used accuracy parity as our evaluation metric to distinguish the difference in overal prediction accuracy for teams that do claim first dragon and for teams that don't. Our threshold of significance will be p-value > 0.05.
+
+* **Group X**: Teams that secured `firstdragon` (Value = 1)
+* **Group Y**: Teams that did not secure `firstdragon` (Value = 0)
+* **Evaluation Metric**: Accuracy
+
+* **Null Hypothesis**: Our model is fair. Its accuracy between teams that get first dragon and teams that don't is the same.
+* **Alternative Hypothesis**: Our model is unfair. Its accuracy between teams that get first dragon is significantly different from its accuracy for teams that don't.
+<iframe src="assets/fairness_permutation_test_histogram.html" width="1000" height="450" frameborder="0"></iframe>
+Our observed difference in accuracy between the two groups was around 2.09%. After running the permutation test with 500 repititions, we calculated a p-value of 0.4200. Because our p-value of 0.4200 is greater than our threshold of significance (0.05), we fail to reject the null hypothesis. Therefore, we conclude that our model is fair and that there is no significant difference in predictive accuracy based on whether a team secures first dragon.
