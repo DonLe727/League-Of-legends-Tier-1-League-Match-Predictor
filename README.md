@@ -150,8 +150,8 @@ To optimize our Random Forest and prevent overfitting to the training data, we u
 
 **Results:**
 * **Best Hyperparameters**: `rf__max_depth`= 5; `rf__n_estimators`=100
-* **Cross-Validation Accuracy**: 0.7189
-* **Final Test Accuracy**: 0.7265
+* **Cross-Validation Accuracy**: 0.7178
+* **Final Test Accuracy**: 0.7271
 
 By including various early-game statistics such as first blood and first dragon status on top of economic success, our Random Forest model improved our ability to predict the match outcome by a slight amount. Our accuracy increased by 0.0047. This is likely due to gold data being an accumative measurement of all micro advantages a team has combined, therefore, not increasing our accuracy by a significant amount compared to our Baseline model (which predicted solely on `golddiffat15`).
 
