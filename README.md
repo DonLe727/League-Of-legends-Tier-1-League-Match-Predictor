@@ -46,13 +46,13 @@ To prepare the data for our EDA, we took several cleaning steps.
 4. **Type Conversion**: We converted categorical boolean columns like `result`,`firstblood`,`firstdragon` into integers (1 and 0).
 5. **Handling Missingness**: We dropped NA values to maintain consistency during our initial EDA.
 
-| gameid                | league   | side   | position   |   result |   firstblood |   firstdragon |   golddiffat15 |   killsat15 |   opp_killsat15 |   ckpm |
-|:----------------------|:---------|:-------|:-----------|---------:|-------------:|--------------:|---------------:|------------:|----------------:|-------:|
-| ESPORTSTMNT04_2659018 | LCK      | Blue   | team       |        1 |            0 |             1 |           3176 |           5 |               1 | 0.7965 |
-| ESPORTSTMNT04_2659018 | LCK      | Red    | team       |        0 |            1 |             0 |          -3176 |           1 |               5 | 0.7965 |
-| ESPORTSTMNT04_2661035 | LCK      | Blue   | team       |        1 |            1 |             0 |           1287 |           3 |               0 | 0.5804 |
-| ESPORTSTMNT04_2661035 | LCK      | Red    | team       |        0 |            0 |             1 |          -1287 |           0 |               3 | 0.5804 |
-| ESPORTSTMNT04_2660040 | LCK      | Blue   | team       |        1 |            0 |             0 |            905 |           2 |               4 | 0.8326 |
+| gameid                | league   | side   | position   |   result |   firstblood |   firstdragon |   golddiffat15 |   killsat15 |   opp_killsat15 |   ckpm |   firstherald |
+|:----------------------|:---------|:-------|:-----------|---------:|-------------:|--------------:|---------------:|------------:|----------------:|-------:|--------------:|
+| ESPORTSTMNT04_2659018 | LCK      | Blue   | team       |        1 |            0 |             1 |           3176 |           5 |               1 | 0.7965 |             1 |
+| ESPORTSTMNT04_2659018 | LCK      | Red    | team       |        0 |            1 |             0 |          -3176 |           1 |               5 | 0.7965 |             0 |
+| ESPORTSTMNT04_2661035 | LCK      | Blue   | team       |        1 |            1 |             0 |           1287 |           3 |               0 | 0.5804 |             0 |
+| ESPORTSTMNT04_2661035 | LCK      | Red    | team       |        0 |            0 |             1 |          -1287 |           0 |               3 | 0.5804 |             1 |
+| ESPORTSTMNT04_2660040 | LCK      | Blue   | team       |        1 |            0 |             0 |            905 |           2 |               4 | 0.8326 |             0 |
 
 ### Aggregation
 
