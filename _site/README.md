@@ -9,13 +9,13 @@ League of Legends is arguably the most popular game across history. Many of its 
 
 ### DataFrame (Displaying some columns)
 
-| gameid                | league   | side   | position   |   result |   firstblood |   firstdragon |   golddiffat15 |   killsat15 |   opp_killsat15 |   ckpm |
-|:----------------------|:---------|:-------|:-----------|---------:|-------------:|--------------:|---------------:|------------:|----------------:|-------:|
-| ESPORTSTMNT06_2753012 | LFL2     | Blue   | top        |        1 |            0 |           nan |            322 |           0 |               0 | 0.4594 |
-| ESPORTSTMNT06_2753012 | LFL2     | Blue   | jng        |        1 |            0 |           nan |           -357 |           0 |               0 | 0.4594 |
-| ESPORTSTMNT06_2753012 | LFL2     | Blue   | mid        |        1 |            0 |           nan |           -479 |           0 |               0 | 0.4594 |
-| ESPORTSTMNT06_2753012 | LFL2     | Blue   | bot        |        1 |            0 |           nan |            200 |           0 |               1 | 0.4594 |
-| ESPORTSTMNT06_2753012 | LFL2     | Blue   | sup        |        1 |            0 |           nan |           -216 |           0 |               0 | 0.4594 |
+| gameid                | league   | side   | position   |   result |   firstblood |   firstdragon |   golddiffat15 |   killsat15 |   opp_killsat15 |   ckpm |   firstherald |
+|:----------------------|:---------|:-------|:-----------|---------:|-------------:|--------------:|---------------:|------------:|----------------:|-------:|--------------:|
+| ESPORTSTMNT04_2659018 | LCK      | Blue   | team       |        1 |            0 |             1 |           3176 |           5 |               1 | 0.7965 |             1 |
+| ESPORTSTMNT04_2659018 | LCK      | Red    | team       |        0 |            1 |             0 |          -3176 |           1 |               5 | 0.7965 |             0 |
+| ESPORTSTMNT04_2661035 | LCK      | Blue   | team       |        1 |            1 |             0 |           1287 |           3 |               0 | 0.5804 |             0 |
+| ESPORTSTMNT04_2661035 | LCK      | Red    | team       |        0 |            0 |             1 |          -1287 |           0 |               3 | 0.5804 |             1 |
+| ESPORTSTMNT04_2660040 | LCK      | Blue   | team       |        1 |            0 |             0 |            905 |           2 |               4 | 0.8326 |             0 |
 
 * **Total Rows**: 376,452 (188226 games)
 * **Columns**: 165
@@ -30,6 +30,7 @@ League of Legends is arguably the most popular game across history. Many of its 
     * `side`: What side a team was playing on. (`Blue`, or `Red`)
     * `position`: 6 different labels: top, jng, mid, bot, sup, team
     * `ckpm`: Combined Kills per Minute. (float; No missing values)
+    * `firstherald`: A float indicating if a team secured first herald. (1.0 for True, 0.0 for False)
 
 
 
@@ -55,13 +56,13 @@ To prepare the data for our EDA, we took several cleaning steps.
 
 ### Aggregation
 
-| league   |   avg_ckpm |   avg_kills_at_15 |   first_blood_rate |   first_dragon |
-|:---------|-----------:|------------------:|-------------------:|---------------:|
-| LCP      |      0.869 |             3.414 |              0.5   |            0.5 |
-| LEC      |      0.849 |             3.757 |              0.5   |            0.5 |
-| CBLOL    |      0.831 |             2.72  |              0.5   |            0.5 |
-| LCS      |      0.805 |             3.339 |              0.499 |            0.5 |
-| LCK      |      0.8   |             3.007 |              0.5   |            0.5 |
+| league   |   avg_ckpm |   avg_kills_at_15 |   first_blood_rate |   first_dragon |   first_herald |
+|:---------|-----------:|------------------:|-------------------:|---------------:|---------------:|
+| LCP      |      0.869 |             3.414 |              0.5   |            0.5 |          0.498 |
+| LEC      |      0.849 |             3.757 |              0.5   |            0.5 |          0.499 |
+| CBLOL    |      0.831 |             2.72  |              0.5   |            0.5 |          0.492 |
+| LCS      |      0.805 |             3.339 |              0.499 |            0.5 |          0.496 |
+| LCK      |      0.8   |             3.007 |              0.5   |            0.5 |          0.499 |
 
 To aggregate our data, we grouped our data by `league` and calculated the mean for `ckpm`, `killsat15`, `firstblood`, and `firstdragon`. This pivot table reveals the different levels of early-game statistics and intensity across Tier-1 leagues. Most importantly, our pivot table reveals that amongst the Tier-1 regions, LPL is not there, signifying that LPL does not record 15-minute interval statistics. **Our analysis will therefore not include LPL as a Tier-1 LoL League and will be referencing Tier-1 League as [`LCK`, `LEC`, `LCS`, `CBLOL`, `LCP`] for convenience unless specified otherwise.**
 
@@ -116,7 +117,7 @@ Because our p-value is far below our significance level of 0.05, we reject the n
 ## Framing a Prediction Problem
 Our goal is to predict the `result` (win/loss) of a tier-1 league game. This is a binary classification problem.
 
-We are primarily focusing on the 15-minute mark + early game statistics of the game to predict the outcome of a game. Our model will be trained on early-game information such as `killsat15`, `firstdragon`, `golddiffat15`, and `firstdragon`.
+We are primarily focusing on the 15-minute mark + early game statistics of the game to predict the outcome of a game. Our model will be trained on early-game information such as `killsat15`, `firstdragon`, `golddiffat15`, `firstherald`, and `firstdragon`.
 
 We are using accuracy as our evaluation metric because we want to be able to predict the outcome of each match consistently. Because our dataset has data on both teams per match, we have a perfectly balance 50/50 ratio of wins and losses. This makes accuracy an effective metric.
 
@@ -169,5 +170,5 @@ To evaluate the fairness of our Final Random Forest model, we utilized permutati
 
 * **Null Hypothesis**: Our model is fair. Its accuracy between teams that get first dragon and teams that don't is the same.
 * **Alternative Hypothesis**: Our model is unfair. Its accuracy between teams that get first dragon is significantly different from its accuracy for teams that don't.
-<iframe src="assets/fairness_permutation_test_histogram.html" width="1000" height="450" frameborder="0"></iframe>
+<iframe src="assets/fairness_permutation_test_histogram.html" width="900" height="550" frameborder="0"></iframe>
 Our observed difference in accuracy between the two groups was around 2.09%. After running the permutation test with 500 repititions, we calculated a p-value of 0.4200. Because our p-value of 0.4200 is greater than our threshold of significance (0.05), we fail to reject the null hypothesis. Therefore, we conclude that our model is fair and that there is no significant difference in predictive accuracy based on whether a team secures first dragon.
